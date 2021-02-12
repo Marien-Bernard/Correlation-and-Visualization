@@ -1,0 +1,109 @@
+---
+title: "Correlation And Visualization"
+author: "Marien  Bernard"
+date: "12/02/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r,echo=TRUE}
+
+
+
+# **Scatter Plot**
+trees
+library(tidyverse)
+ggplot(trees, aes(x = Girth, y = Height)) +
+   
+  geom_point() +
+  geom_smooth(formula = y ~ x, method = "lm", se = FALSE) +
+  ggpubr::stat_cor(aes(label = tolower(..r.label..)), label.y = 8.0) +
+  theme_classic() +
+  theme(panel.spacing = unit(1, "lines")) +
+  labs(x = "Girth",
+       y = "Height",
+       title = "Girth vs Height Scatter Plot")
+       
+       
+## Here The  Scatter plot shows that there is a Positive Correlation
+##(i.e, Girth and Height moves along the same direction, as girth increases , height also increases)
+
+# **Karl Pearson Method**
+my_data=trees
+my_data
+cor_1=cor.test(my_data$Height, my_data$Volume, method = "pearson")
+cor_1
+
+## Karl Peasorn method is used to find the correlation between height and volume . This shows that it has a intermediate direct Correlation
+
+
+# **Correlation Matrix**
+my_data=trees[,c(1,2,3)]
+my_data
+head(my_data,5)
+cor_2=round(cor(my_data,method="spearman"),4)
+cor_2
+
+## The correlation matrix is used to investigate the dependence between multiple variables at the same time. The result is a table containing the correlation coefficients between each variable and the others.
+
+# **Visualizing Correlation Matrix**
+
+# **USING CORRELOGRAM**
+#install.packages(corrplot)
+library(corrplot)
+my_data=trees[,c(1,2,3)]
+my_data
+head(my_data,5)
+cor_3=corrplot(cor_2, type = "upper",order = "hclust",tl.col = "red", tl.srt = 75)
+cor_3
+
+##Positive correlation are indicated by blue color, Negative correlation is indicated bu red color.
+
+##Color intensity and size of circles are also propotional to correlation.
+
+##Here we can see that there are no negative correlations, also the correlation between "height and girth" and "Height and volume  " are positive and intermediate whereas all other correlations are positive and strong.
+
+#Chart Plot
+#install.packages("PerformanceAnalytics")
+library(PerformanceAnalytics)
+my_data = trees[, c(1,2,3)]
+head(my_data,5)
+cor_4=chart.Correlation(my_data,histogram=TRUE,method="pearson")
+
+
+##Diagonol contains the Distributions
+##Lower Triangle contains Scatter Diagram with fitted Line
+###Upper triangle contains correlation value with significance level stars
+##here (***)-0.001, (**)-0.01,(*)-0.1 and so on..
+
+
+#Symbolic Number
+cor_5=cor(trees[,c(1,2,3)])
+cor_5
+symnum(cor_5, abbr.colnames = F)
+
+## 0 to 0.3 = '', 0.3 to 0.6 = '.' , 0.6 to 0.8 = ',' , 0.8 to 0.9 = '+' , 0.9 to 0.95 = '*' , 0.95 to 1 = 'B'
+
+## volume and Girth has  correlation between 0.9 to 0.95 , whereas height and girth has correlation between 0.3 to 0.6 
+
+#ggcorrplot
+my_data = trees[, c(1,2,3)]
+head(my_data,5)
+cor_6=round(cor(my_data),4)
+cor_6
+#install.packages("ggcorrplot")
+library(ggcorrplot)
+#SQUARES
+ggcorrplot(cor_6) 
+
+#CIRCLES
+ggcorrplot(cor_6,method="circle")
+
+#Lower Triangle
+ggcorrplot(cor_6,hc.order = T,type = "lower",lab = T)
+
+##the red color indicates all correlations are positive.
+
+```
